@@ -35,7 +35,7 @@ class SM_Admin_Post_Types {
 		add_filter( 'parse_query', array( $this, 'sermon_filters_query' ) );
 
 		// Edit post screens.
-		add_filter( 'enter_title_here', array( $this, 'enter_title_here' ), 1, 2 );
+		//add_filter( 'enter_title_here', array( $this, 'enter_title_here' ), 1, 2 );
 
 		// include_once 'class-sm-admin-meta-boxes.php'; - @todo.
 		do_action( 'after_sm_admin_post_types' );
@@ -94,7 +94,7 @@ class SM_Admin_Post_Types {
 		$columns             = array();
 		$columns['cb']       = '<input type="checkbox" />';
 		$columns['title']    = __( 'Sermon Title', 'sermon-manager-for-wordpress' );
-		$columns['preacher'] = ucwords( \SermonManager::getOption( 'preacher_label' ) ) ?: __( 'Preacher', 'sermon-manager-for-wordpress' );
+		$columns['preacher'] = sm_get_taxonomy_field( 'wpfc_preacher', 'singular_name' );
 		$columns['series']   = __( 'Sermon Series', 'sermon-manager-for-wordpress' );
 		$columns['topics']   = __( 'Topics', 'sermon-manager-for-wordpress' );
 		$columns['views']    = __( 'Views', 'sermon-manager-for-wordpress' );
@@ -192,8 +192,8 @@ class SM_Admin_Post_Types {
 	/**
 	 * Set row actions for sermons
 	 *
-	 * @param  array   $actions The existing actions.
-	 * @param  WP_Post $post    Sermon or other post instance.
+	 * @param array   $actions The existing actions.
+	 * @param WP_Post $post    Sermon or other post instance.
 	 *
 	 * @return array
 	 */
@@ -208,7 +208,7 @@ class SM_Admin_Post_Types {
 	/**
 	 * Filters and sorting handler.
 	 *
-	 * @param  array $vars Current filtering arguments.
+	 * @param array $vars Current filtering arguments.
 	 *
 	 * @return array
 	 */
@@ -248,8 +248,8 @@ class SM_Admin_Post_Types {
 	/**
 	 * Change title boxes in admin.
 	 *
-	 * @param  string $text The title.
-	 * @param  object $post The post.
+	 * @param string $text The title.
+	 * @param object $post The post.
 	 *
 	 * @return string
 	 */
@@ -309,7 +309,8 @@ class SM_Admin_Post_Types {
 		$output = '';
 
 		$output .= '<select name="wpfc_service_type" id="dropdown_wpfc_service_type">';
-		$output .= '<option value="">' . __( 'Filter by Service Type', 'sermon-manager-for-wordpress' ) . '</option>';
+		// translators: %s Taxonomy name. Default: Service Type.
+		$output .= '<option value="">' . wp_sprintf( __( 'Filter by %s', 'sermon-manager-for-wordpress' ), sm_get_taxonomy_field( 'wpfc_service_type', 'singular_name' ) ) . '</option>';
 
 		foreach ( $terms as $term ) {
 			$output .= '<option value="' . $term->slug . '" ';

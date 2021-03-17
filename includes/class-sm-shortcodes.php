@@ -450,7 +450,7 @@ class SM_Shortcodes {
 		$args = shortcode_atts( $args, $atts, 'sermon_images' );
 
 		// Convert to bool.
-		$args['show_description'] = (bool) $args['show_description'];
+		$args['show_description'] = false;
 
 		// Check if we are using a SM taxonomy, and if we are, convert to valid taxonomy name.
 		if ( $this->convert_taxonomy_name( $args['display'], true ) ) {
@@ -458,7 +458,7 @@ class SM_Shortcodes {
 		} elseif ( ! $this->convert_taxonomy_name( $args['display'], false ) ) {
 			return '<strong>Error: Invalid "list" parameter.</strong><br> Possible values are: "series", "preachers", "topics" and "books".<br> You entered: "<em>' . $args['display'] . '</em>"';
 		}
-
+		
 		// Format args.
 		$args = array(
 			'taxonomy'  => $args['display'],
@@ -481,13 +481,16 @@ class SM_Shortcodes {
 
 		// $terms will always return an array
 		if ( ! empty( $terms ) ) {
-			$list = '<ul id="wpfc_images_grid">';
 
+			// Convert to bool.
+			$args['show_description'] = false;
+			$args['hide_title'] = false;
+			$list = '<ul id="wpfc_images_grid">';
 			foreach ( (array) $terms as $term ) {
 				$term_url = esc_url( get_term_link( $term, $term->taxonomy ) );
 
 				$list .= '<li class="wpfc_grid_image">';
-				$list .= '<a href="' . $term_url . '">' . wp_get_attachment_image( $term->image_id, $args['size'] ) . '</a>';
+				$list .= '<a href="' . $term_url . '">' . wp_get_attachment_image( $term->image_id, $atts['size'] ) . '</a>';
 				if ( false == $args['hide_title'] || 'no' == $args['hide_title'] ) {
 					$list .= '<h3 class="wpfc_grid_title"><a href="' . $term_url . '">' . $term->name . '</a></h3>';
 				}
@@ -619,9 +622,12 @@ class SM_Shortcodes {
 	 * @return WP_Term|null|false Term if found, null if there are no terms, false if there is no term with image.
 	 */
 	public function get_latest_series_with_image() {
+		//Get Order from settings
 		$default_orderby = SermonManager::getOption( 'archive_orderby' );
 		$default_order   = SermonManager::getOption( 'archive_order' );
-
+		if(empty($default_order)){
+			$default_order = '';
+		}
 		$query_args = array(
 			'taxonomy'   => 'wpfc_sermon_series',
 			'hide_empty' => false,
@@ -769,6 +775,7 @@ class SM_Shortcodes {
 	 * @return string
 	 */
 	function display_sermons( $atts = array() ) {
+		
 		global $post_ID;
 
 		// Enqueue scripts and styles.
@@ -778,11 +785,26 @@ class SM_Shortcodes {
 
 		// Unquote and verify boolean values.
 		if ( is_array( $atts ) || is_object( $atts ) ) {
+			// SermonManager::fetchOptionalValue($atts);
 			foreach ( $atts as &$att ) {
 				$att = $this->_unquote( $att );
 			}
 		}
 
+		//  Fetch Optional Perameter From ShortCode
+		if ( is_array( $atts ) || is_object( $atts ) ) {
+			foreach($atts as $key=>$value){
+				if($key == 'image'){
+					SermonManager::$image = $value;
+				}
+				if($key == 'title'){
+					SermonManager::$title = $value;
+				}
+				if($key == 'description'){
+					SermonManager::$description = $value;
+				}
+			}
+		}		
 		// Default options.
 		$args = array(
 			'per_page'           => get_option( 'posts_per_page' ) ?: 10,
@@ -962,7 +984,7 @@ class SM_Shortcodes {
 				$query_args['meta_query'][] = array(
 					'key'     => 'sermon_date',
 					'value'   => $after,
-					'compare' => '=>',
+					'compare' => '>=',
 				);
 			}
 		}

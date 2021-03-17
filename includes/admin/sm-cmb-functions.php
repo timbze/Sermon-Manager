@@ -53,9 +53,11 @@ function wpfc_sermon_metaboxes() {
 		'autocomplete' => 'off',
 	) );
 	$sermon_details_meta->add_field( array(
-		'name'             => esc_html__( 'Service Type', 'sermon-manager-for-wordpress' ),
-		// translators: %s <a href="edit-tags.php?taxonomy=wpfc_service_type&post_type=wpfc_sermon" target="_blank">here</a>.
-		'desc'             => wp_sprintf( esc_html__( 'Select the type of service. Modify service types %s.', 'sermon-manager-for-wordpress' ), '<a href="' . admin_url( 'edit-tags.php?taxonomy=wpfc_service_type&post_type=wpfc_sermon' ) . '" target="_blank">here</a>' ),
+		'name'             => sm_get_taxonomy_field( 'wpfc_service_type', 'singular_name' ),
+		// translators: %1$s The singular label. Default Service Type.
+		// translators: %2$s The plural label. Default Service Types.
+		// translators: %3$s <a href="edit-tags.php?taxonomy=wpfc_service_type&post_type=wpfc_sermon" target="_blank">here</a>.
+		'desc'             => wp_sprintf( esc_html__( 'Select the %1$s. Modify the %2$s %3$s.', 'sermon-manager-for-wordpress' ), strtolower( sm_get_taxonomy_field( 'wpfc_service_type', 'singular_name' ) ), strtolower( sm_get_taxonomy_field( 'wpfc_service_type', 'label' ) ), '<a href="' . admin_url( 'edit-tags.php?taxonomy=wpfc_service_type&post_type=wpfc_sermon' ) . '" target="_blank">here</a>' ),
 		'id'               => 'wpfc_service_type',
 		'type'             => 'select',
 		'show_option_none' => true,
@@ -117,8 +119,8 @@ function wpfc_sermon_metaboxes() {
 		'type' => 'text_url',
 	) ) );
 	$sermon_files_meta->add_field( array(
-		'name' => esc_html__( 'Sermon Notes', 'sermon-manager-for-wordpress' ),
-		'desc' => esc_html__( 'Upload a pdf file or enter an URL.', 'sermon-manager-for-wordpress' ),
+		'name' => esc_html__( 'Single Sermon Note', 'sermon-manager-for-wordpress' ),
+		'desc' => esc_html__( 'Upload  pdf file.', 'sermon-manager-for-wordpress' ),
 		'id'   => 'sermon_notes',
 		'type' => 'file',
 		'text' => array(
@@ -127,10 +129,30 @@ function wpfc_sermon_metaboxes() {
 		),
 	) );
 	$sermon_files_meta->add_field( array(
-		'name' => esc_html__( 'Bulletin', 'sermon-manager-for-wordpress' ),
-		'desc' => esc_html__( 'Upload a pdf file or enter an URL.', 'sermon-manager-for-wordpress' ),
+		'name' => esc_html__( 'Multiple Sermon Notes', 'sermon-manager-for-wordpress' ),
+		'desc' => esc_html__( 'Upload  pdf files.', 'sermon-manager-for-wordpress' ),
+		'id'   => 'sermon_notes_multiple',
+		'type' => 'file_list',
+		'text' => array(
+			'add_upload_file_text' => esc_html__( 'Add File', 'sermon-manager-for-wordpress' ),
+			// Change upload button text. Default: "Add or Upload File".
+		),
+	) );
+	$sermon_files_meta->add_field( array(
+		'name' => esc_html__( 'Single Bulletin', 'sermon-manager-for-wordpress' ),
+		'desc' => esc_html__( 'Upload a pdf file.', 'sermon-manager-for-wordpress' ),
 		'id'   => 'sermon_bulletin',
 		'type' => 'file',
+		'text' => array(
+			'add_upload_file_text' => esc_html__( 'Add File', 'sermon-manager-for-wordpress' ),
+			// Change upload button text. Default: "Add or Upload File".
+		),
+	) );
+	$sermon_files_meta->add_field( array(
+		'name' => esc_html__( 'Multiple Bulletin', 'sermon-manager-for-wordpress' ),
+		'desc' => esc_html__( 'Upload pdf files.', 'sermon-manager-for-wordpress' ),
+		'id'   => 'sermon_bulletin_multiple',
+		'type' => 'file_list',
 		'text' => array(
 			'add_upload_file_text' => esc_html__( 'Add File', 'sermon-manager-for-wordpress' ),
 			// Change upload button text. Default: "Add or Upload File".
